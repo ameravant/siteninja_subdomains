@@ -6,5 +6,5 @@ for klass in %w(Event Person User Page Menu Article ArticleCategory PersonGroup 
     klass.constantize.send(:subdomainify)
   end
 end
-Page.send(:uniqueness_validation_for_meta_title)
-Person.send(:person_extra_methods)
+ActiveRecord::Base::Page.send(:uniqueness_validation_for_meta_title)
+ActiveRecord::Base::Person.send(:person_extra_methods)
