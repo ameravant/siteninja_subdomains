@@ -2,7 +2,7 @@ require 'subdomainify'
 require 'permalink_fu_replacement.rb'
 require 'validation_ext.rb'
 for klass in %w(Event Person User Page Menu Article ArticleCategory PersonGroup Feature FeaturableSection Testimonial Gallery Image)  
-  if ActiveRecord.connection.tables.include?(klass.tableize)
+  if ActiveRecord::Base.connection.tables.include?(klass.tableize)
     klass.send(:subdomainify)
   end
 end
