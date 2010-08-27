@@ -124,5 +124,6 @@ module ActiveRecord #:nodoc:
     end
   end
 end
+
 ActiveRecord::Base.send(:include, ActiveRecord::Subdomainify)
 ActiveRecord::Validations.send(:include, ActiveRecord::ValidationExt)

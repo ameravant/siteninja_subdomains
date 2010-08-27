@@ -1,7 +1,7 @@
 require 'subdomainify'
 require 'permalink_fu_replacement.rb'
 require 'validation_ext.rb'
-for klass in [Event, Person, User, Page, Menu, Article, ArticleCategory, PersonGroup, Feature, FeaturableSection]  
+for klass in [Event, Person, User, Page, Menu, Article, ArticleCategory, PersonGroup, Feature, FeaturableSection, Testimonial, Gallery, Image]  
   klass.send(:subdomainify)
 end
 Page.send(:uniqueness_validation_for_meta_title)

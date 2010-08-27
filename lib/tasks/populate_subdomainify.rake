@@ -179,7 +179,7 @@ namespace :db do
         #           Page.create!(:title => 'Testimonials', :body => 'Testimonials', :meta_title => 'Testimonials', :show_in_footer => true, :can_delete => false, :parent_id => home.id, :account_id => account_id)
         #         end
         if @cms_config['features']['testimonials']
-          Page.create!(:title => 'Testimonials', :body => 'Testimonials', :meta_title => 'Testimonials', :show_in_footer => true, :can_delete => false, :parent_id => home.id)
+          testimonials = Page.create!(:title => 'Testimonials', :body => 'Testimonials', :meta_title => 'Testimonials', :show_in_footer => true, :can_delete => false, :parent_id => home.id, :account_id => account_id)
           Testimonial.create!(:author => "John Doe", :author_title => "Author, That Ninja Book", :quote => "This is a great resource for all things ninja-related!", :quotable_type => "Page", :quotable_id => testimonials.id, :feature => 'true', :account_id => account_id)
           Testimonial.create!(:author => "Joe Ninja", :author_title => "Blogger, Ninja Blog", :quote => "This site has everything I ever needed!", :quotable_type => "Page", :quotable_id => testimonials.id, :feature => 'true', :account_id => account_id)
           Testimonial.create!(:author => "Billy Bob", :author_title => "Every Day User", :quote => "I did a search regarding ninjas on google and found this to be the most complete resource available.", :quotable_type => "Page", :quotable_id => testimonials.id, :feature => 'true', :account_id => account_id)
@@ -242,48 +242,51 @@ namespace :db do
     end
 
     def fake_galleries
-      puts "Creating galleries..."
-      # THESE MUST STAY IN THE SAME ORDER!
-      Gallery.create!(:title => "Weapons", :description => "A gallery of weapons used by ninjas.", :user_id => 1)
-      Image.create!(:title => "Katana", :viewable_id => 1, :viewable_type => "Gallery", :position => 8, :image_file_name => "00-7X128_2.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 54406)
-      Image.create!(:title => "Sais", :viewable_id => 1, :viewable_type => "Gallery", :position => 5, :image_file_name => "20-2312_1.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 48938)
-      Image.create!(:title => "Black sais", :viewable_id => 1, :viewable_type => "Gallery", :position => 6, :image_file_name => "325.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 47184)
-      Image.create!(:title => "Katana on rack", :viewable_id => 1, :viewable_type => "Gallery", :position => 7, :image_file_name => "552119_craneall.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 136353)
-      Image.create!(:title => "Custom katana hilt and sheath", :viewable_id => 1, :viewable_type => "Gallery", :position => 9, :image_file_name => "309358210_294f9bef3f_o.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 196056)
-      Image.create!(:title => "Katana with blue hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 1, :image_file_name => "CC1b.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 1026876)
-      Image.create!(:title => "Katana with blue hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 3, :image_file_name => "CC3b.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 774273)
-      Image.create!(:title => "Katana with blue hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 2, :image_file_name => "CC6b.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 833113)
-      Image.create!(:title => "Hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 10, :image_file_name => "crane5.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 369798)
-      Image.create!(:title => "Katana", :viewable_id => 1, :viewable_type => "Gallery", :position => 4, :image_file_name => "Katana.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 813610)
-      Image.create!(:title => "Katana with red hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 11, :image_file_name => "katana1.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 395697)
-      Image.create!(:title => "Sais with red grips", :viewable_id => 1, :viewable_type => "Gallery", :position => 12, :image_file_name => "new_sai.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 2045549)
-      Image.create!(:title => "Katana on glass", :viewable_id => 1, :viewable_type => "Gallery", :position => 13, :image_file_name => "original_208428_ODaM7fpFt7GnuTHkOFPEUQkr5.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 910418)
-      Image.create!(:title => "Katana with purple hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 14, :image_file_name => "Weapons-Mitsurugi.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 37174)
-
-      Gallery.create!(:title => "Artwork", :user_id => 1, :description => "Various ninja-inspired artworks.")
-      Image.create!(:title => "Afro Samurai", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "wallpaper_afro_samurai_03_2560x1600.jpg", :image_content_type => "image/jpeg", :image_file_size => 965963)
-      Image.create!(:title => "Samurai Showdown", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "SamuraiShowdown.jpg", :image_content_type => "image/jpeg", :image_file_size => 537619)
-      Image.create!(:title => "Samurai", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "samurai_7_151_1280.jpg", :image_content_type => "image/jpeg", :image_file_size => 324232)
-      Image.create!(:title => "Anime Ninja", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "anime_ninja_1600x1200.jpg", :image_content_type => "image/jpeg", :image_file_size => 315351)
-      Image.create!(:title => "Anime Ninja", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "anime_ninja.jpg", :image_content_type => "image/jpeg", :image_file_size => 197893)
-      Image.create!(:title => "Ninja Gaiden", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "tgs-ninja-gaiden-sigma-2.jpg", :image_content_type => "image/jpeg", :image_file_size => 108714)
-      Image.create!(:title => "Samurai", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "628415samurai_x39.jpg", :image_content_type => "image/jpeg", :image_file_size => 151067)
-
-      gallery_3 = Gallery.create!(:title => "Ninja Kids", :description => "Ninja halloween costumes.", :user_id => 1)
-      Image.create!(:title => "Red dragon", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "18402.jpg", :image_content_type => "image/jpeg", :image_file_size => 130157)
-      Image.create!(:title => "White dragon", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "6501.jpg", :image_content_type => "image/jpeg", :image_file_size => 102335)
-      Image.create!(:title => "Flames", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "17012.jpg", :image_content_type => "image/jpeg", :image_file_size => 115823)
-      Image.create!(:title => "Tornado", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "17014.jpg", :image_content_type => "image/jpeg", :image_file_size => 202886)
-      Image.create!(:title => "Armored", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "20366.jpg", :image_content_type => "image/jpeg", :image_file_size => 162303)
-      Image.create!(:title => "Trident weapon", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "31532.jpg", :image_content_type => "image/jpeg", :image_file_size => 122087)
-      Image.create!(:title => "Stealth", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "33404.jpg", :image_content_type => "image/jpeg", :image_file_size => 1184181)
-      Image.create!(:title => "Nunchucku", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "33655.jpg", :image_content_type => "image/jpeg", :image_file_size => 148399)
-      Image.create!(:title => "Sais", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "34511.jpg", :image_content_type => "image/jpeg", :image_file_size => 246530)
-      gallery_3.update_attributes(:slideshow => true)
-      for gallery in Gallery.all
-        Feature.create!(:featurable_id => gallery.id, :featurable_type => "Gallery", :featurable_section_id => 1)
-      end
-    end
+       puts "Creating galleries..."
+       # THESE MUST STAY IN THE SAME ORDER!
+       [1, 2, 3].each do |account_id|
+         $CURRENT_ACCOUNT = Account.find(account_id)
+         Gallery.create(:account_id => account_id, :title => "Weapons", :description => "A gallery of weapons used by ninjas.", :user_id => 1)
+         Image.create(:account_id => account_id, :title => "Katana", :viewable_id => 1, :viewable_type => "Gallery", :position => 8, :image_file_name => "00-7X128_2.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 54406)
+         Image.create(:account_id => account_id, :title => "Sais", :viewable_id => 1, :viewable_type => "Gallery", :position => 5, :image_file_name => "20-2312_1.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 48938)
+         Image.create(:account_id => account_id, :title => "Black sais", :viewable_id => 1, :viewable_type => "Gallery", :position => 6, :image_file_name => "325.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 47184)
+         Image.create(:account_id => account_id, :title => "Katana on rack", :viewable_id => 1, :viewable_type => "Gallery", :position => 7, :image_file_name => "552119_craneall.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 136353)
+         Image.create(:account_id => account_id, :title => "Custom katana hilt and sheath", :viewable_id => 1, :viewable_type => "Gallery", :position => 9, :image_file_name => "309358210_294f9bef3f_o.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 196056)
+         Image.create(:account_id => account_id, :title => "Katana with blue hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 1, :image_file_name => "CC1b.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 1026876)
+         Image.create(:account_id => account_id, :title => "Katana with blue hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 3, :image_file_name => "CC3b.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 774273)
+         Image.create(:account_id => account_id, :title => "Katana with blue hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 2, :image_file_name => "CC6b.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 833113)
+         Image.create(:account_id => account_id, :title => "Hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 10, :image_file_name => "crane5.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 369798)
+         Image.create(:account_id => account_id, :title => "Katana", :viewable_id => 1, :viewable_type => "Gallery", :position => 4, :image_file_name => "Katana.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 813610)
+         Image.create(:account_id => account_id, :title => "Katana with red hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 11, :image_file_name => "katana1.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 395697)
+         Image.create(:account_id => account_id, :title => "Sais with red grips", :viewable_id => 1, :viewable_type => "Gallery", :position => 12, :image_file_name => "new_sai.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 2045549)
+         Image.create(:account_id => account_id, :title => "Katana on glass", :viewable_id => 1, :viewable_type => "Gallery", :position => 13, :image_file_name => "original_208428_ODaM7fpFt7GnuTHkOFPEUQkr5.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 910418)
+         Image.create(:account_id => account_id, :title => "Katana with purple hilt", :viewable_id => 1, :viewable_type => "Gallery", :position => 14, :image_file_name => "Weapons-Mitsurugi.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 37174)
+         
+         Gallery.create(:account_id => account_id, :title => "Artwork", :user_id => 1, :description => "Various ninja-inspired artworks.")
+         Image.create(:account_id => account_id, :title => "Afro Samurai", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "wallpaper_afro_samurai_03_2560x1600.jpg", :image_content_type => "image/jpeg", :image_file_size => 965963)
+         Image.create(:account_id => account_id, :title => "Samurai Showdown", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "SamuraiShowdown.jpg", :image_content_type => "image/jpeg", :image_file_size => 537619)
+         Image.create(:account_id => account_id, :title => "Samurai", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "samurai_7_151_1280.jpg", :image_content_type => "image/jpeg", :image_file_size => 324232)
+         Image.create(:account_id => account_id, :title => "Anime Ninja", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "anime_ninja_1600x1200.jpg", :image_content_type => "image/jpeg", :image_file_size => 315351)
+         Image.create(:account_id => account_id, :title => "Anime Ninja", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "anime_ninja.jpg", :image_content_type => "image/jpeg", :image_file_size => 197893)
+         Image.create(:account_id => account_id, :title => "Ninja Gaiden", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "tgs-ninja-gaiden-sigma-2.jpg", :image_content_type => "image/jpeg", :image_file_size => 108714)
+         Image.create(:account_id => account_id, :title => "Samurai", :viewable_id => 2, :viewable_type => "Gallery", :position => 1, :image_file_name => "628415samurai_x39.jpg", :image_content_type => "image/jpeg", :image_file_size => 151067)
+         
+         gallery_3 = Gallery.create(:account_id => account_id, :title => "Ninja Kids", :description => "Ninja halloween costumes.", :user_id => 1)
+         Image.create(:account_id => account_id, :title => "Red dragon", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "18402.jpg", :image_content_type => "image/jpeg", :image_file_size => 130157)
+         Image.create(:account_id => account_id, :title => "White dragon", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "6501.jpg", :image_content_type => "image/jpeg", :image_file_size => 102335)
+         Image.create(:account_id => account_id, :title => "Flames", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "17012.jpg", :image_content_type => "image/jpeg", :image_file_size => 115823)
+         Image.create(:account_id => account_id, :title => "Tornado", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "17014.jpg", :image_content_type => "image/jpeg", :image_file_size => 202886)
+         Image.create(:account_id => account_id, :title => "Armored", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "20366.jpg", :image_content_type => "image/jpeg", :image_file_size => 162303)
+         Image.create(:account_id => account_id, :title => "Trident weapon", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "31532.jpg", :image_content_type => "image/jpeg", :image_file_size => 122087)
+         Image.create(:account_id => account_id, :title => "Stealth", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "33404.jpg", :image_content_type => "image/jpeg", :image_file_size => 1184181)
+         Image.create(:account_id => account_id, :title => "Nunchucku", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "33655.jpg", :image_content_type => "image/jpeg", :image_file_size => 148399)
+         Image.create(:account_id => account_id, :title => "Sais", :caption => "Ninja halloween costume.", :viewable_id => 3, :viewable_type => "Gallery", :position => 1, :image_file_name => "34511.jpg", :image_content_type => "image/jpeg", :image_file_size => 246530)
+         gallery_3.update_attributes(:slideshow => true)
+         for gallery in Gallery.all
+           Feature.create(:featurable_id => gallery.id, :featurable_type => "Gallery", :featurable_section_id => 1, :account_id => account_id)
+         end
+       end
+     end
 
     def fake_events
       puts 'Faking events...'
@@ -327,10 +330,13 @@ namespace :db do
     end
 
     def fake_testimonials
-      puts "Faking testimonials"
-        Testimonial.create!(:author => Faker::Name.name, :author_title => Faker::Name.name, :quote => random_pirate_sentence, :quotable_type => "Product", :quotable_id => 1, :feature => 'false')
-        Testimonial.create!(:author => Faker::Name.name, :author_title => Faker::Name.name, :quote => random_pirate_sentence, :quotable_type => "Product", :quotable_id => 1, :feature => 'false')
-        Testimonial.create!(:author => Faker::Name.name, :author_title => Faker::Name.name, :quote => random_pirate_sentence, :quotable_type => "Product", :quotable_id => 1, :feature => 'false')
+      [1, 2, 3].each do |account_id|
+        $CURRENT_ACCOUNT = Account.find(account_id)
+        puts "Faking testimonials"
+        Testimonial.create!(:author => Faker::Name.name, :author_title => Faker::Name.name, :quote => random_pirate_sentence, :quotable_type => "Product", :quotable_id => 1, :feature => 'false', :account_id => account_id)
+        Testimonial.create!(:author => Faker::Name.name, :author_title => Faker::Name.name, :quote => random_pirate_sentence, :quotable_type => "Product", :quotable_id => 1, :feature => 'false', :account_id => account_id)
+        Testimonial.create!(:author => Faker::Name.name, :author_title => Faker::Name.name, :quote => random_pirate_sentence, :quotable_type => "Product", :quotable_id => 1, :feature => 'false', :account_id => account_id)
+      end
     end
 
     def fake_links
@@ -452,6 +458,13 @@ namespace :db do
       user.person_id = person.id
       user.save!
     end
+    def fake_featurable_sections
+      [2, 3].each do |account_id|
+        $CURRENT_ACCOUNT = Account.find(account_id)
+        fs = FeaturableSection.new(:title => "Home Page Feature Box", :image_required => true, :site_wide => false, :account_id => account_id)
+      end 
+    end
+    
 
     $USERS = User.all
 
@@ -484,6 +497,7 @@ pageTracker._trackPageview();
 #    fake_inquiries
     # fake_products if @cms_config['modules']['product']
     fake_testimonials if @cms_config['modules']['product']
+    fake_featurable_sections
     
     # fs = FeaturableSection.first
     #     m = Menu.first
