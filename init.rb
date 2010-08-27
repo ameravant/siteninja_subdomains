@@ -7,4 +7,4 @@ for klass in %w(Event Person User Page Menu Article ArticleCategory PersonGroup 
   end
 end
 Page.send(:uniqueness_validation_for_meta_title)
-Person.send(:person_extra_methods)
+#Person.send(:person_extra_methods)
