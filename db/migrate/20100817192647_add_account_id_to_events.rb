@@ -1,7 +1,7 @@
 class AddAccountIdToEvents < ActiveRecord::Migration
   def self.up
     for klass in [:events, :people, :person_groups, :users, :pages, :menus, :articles, :article_categories, :features, :featurable_sections, :testimonials, :galleries, :images]
-      if ActiveRecord.connection.tables.include?(klass.to_s.downcase.pluralize)
+      if ActiveRecord.connection.tables.include?(klass.to_s)
         add_column klass, :account_id, :integer, :default => 1
       end
     end
