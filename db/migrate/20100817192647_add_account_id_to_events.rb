@@ -9,7 +9,7 @@ class AddAccountIdToEvents < ActiveRecord::Migration
 
   def self.down
     for klass in [:events, :people, :person_groups, :users, :pages, :menus, :articles, :article_categories, :features, :featurable_sections, :testimonials, :galleries, :images]
-      if ActiveRecord::Base.connection.tables.include?(klass.to_s.downcase.pluralize)
+      if ActiveRecord::Base.connection.tables.include?(klass.to_s)
         remove_column klass, :account_id
       end
     end

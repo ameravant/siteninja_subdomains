@@ -1,3 +1,4 @@
+require 'paperclip'
 require 'subdomainify'
 require 'permalink_fu_replacement.rb'
 require 'validation_ext.rb'

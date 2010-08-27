@@ -74,9 +74,11 @@ module ActiveRecord #:nodoc:
       def uniqueness_validation_for_meta_title
         validate_on_create :metatitle_validation
         before_save :update_menu_account_id
+        include ActiveRecord::Subdomainify::InstanceMethods
       end
       def person_extra_methods
         after_create :update_user_account_id
+        include ActiveRecord::Subdomainify::InstanceMethods
       end
       def subdomainify 
         before_validation :add_account_id
