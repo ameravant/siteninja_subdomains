@@ -1,4 +1,4 @@
-# module ActiveRecord #:nodoc:
+module ActiveRecord #:nodoc:
   module ValidationExt
     def self.included(base)
       base.extend(ClassMethods)
@@ -125,7 +125,7 @@
       end
     end
   end
-# end
+end
 
-ActiveRecord::Base.send(:include, Subdomainify)
-ActiveRecord::Validations.send(:include, ValidationExt)
+ActiveRecord::Base.send(:include, ActiveRecord::Subdomainify)
+ActiveRecord::Validations.send(:include, ActiveRecord::ValidationExt)

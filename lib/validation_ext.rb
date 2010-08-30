@@ -1,4 +1,4 @@
-# module ActiveRecord
+module ActiveRecord
   module Validations
     module ClassMethods
       def validates_uniqueness_of(*attr_names)
@@ -63,4 +63,4 @@
       end
     end
   end
-# end
+end
