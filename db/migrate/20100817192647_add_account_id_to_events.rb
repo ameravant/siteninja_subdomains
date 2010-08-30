@@ -1,4 +1,4 @@
-class AddAccountIdToEvents < ActiveRecord::Migration
+class AddAccountIdToKlasses < ActiveRecord::Migration
   def self.up
     for klass in [:events, :people, :person_groups, :users, :pages, :menus, :articles, :article_categories, :features, :featurable_sections, :testimonials, :galleries, :images]
       if ActiveRecord::Base.connection.tables.include?(klass.to_s)

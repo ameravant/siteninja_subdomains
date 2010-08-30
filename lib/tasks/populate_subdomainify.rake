@@ -19,7 +19,7 @@ namespace :db do
     require "#{RAILS_ROOT}/vendor/plugins/siteninja/siteninja_core/lib/tasks/populate_methods.rb"
     Account.create!(:name => "master")
     Account.create!(:name => "jason", :subdomain => "jason")
-    Account.create!(:name => "jenn", :subdomain => "jenn")
+    Account.create!(:name => "dave", :subdomain => "dave")
     
 
     def fake_articles
