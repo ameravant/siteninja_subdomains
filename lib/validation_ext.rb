@@ -64,4 +64,3 @@ module ActiveRecord
     end
   end
 end
-ActiveRecord::Validations.send(:include, ActiveRecord::ValidationExt)
