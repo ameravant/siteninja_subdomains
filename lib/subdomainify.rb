@@ -1,3 +1,5 @@
+require 'subdomainify/permalink_fu_replacement.rb'
+require 'subdomainify/validation_ext.rb'
 module ActiveRecord #:nodoc:
   module Subdomainify #:nodoc:
     def self.included(base)
@@ -60,3 +62,11 @@ module ActiveRecord #:nodoc:
   end
 end
 ActiveRecord::Base.send(:include, ActiveRecord::Subdomainify)
+
+for klass in %w(Event Person User Page Menu Article ArticleCategory PersonGroup Feature FeaturableSection Testimonial Gallery)  
+  if ActiveRecord::Base.connection.tables.include?(klass.underscore.downcase.tableize)
+    klass.constantize.send(:subdomainify)
+  end
+end
+Page.send(:uniqueness_validation_for_meta_title)
+Person.send(:person_extra_methods)
