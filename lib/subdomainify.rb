@@ -43,6 +43,7 @@ module ActiveRecord #:nodoc:
         end
       end
       def update_menu_account_id
+        $CURRENT_ACCOUNT = nil
         if menu = Menu.find_all_by_navigatable_id(self.id)
           menu.collect{|m| m.update_attributes(:account_id => self.account_id)}
         end
