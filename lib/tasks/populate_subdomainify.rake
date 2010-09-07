@@ -179,14 +179,11 @@ namespace :db do
         #           Page.create!(:account_id => account_id, :parent_id => contact_us.id, :title => 'Terms of Use', :show_articles => false, :show_events => false, :show_in_footer => true, :show_in_menu => false, :status => 'hidden', :body => 'Terms of Use', :meta_title => "Terms of Use")
         #           Page.create!(:title => 'Testimonials', :body => 'Testimonials', :meta_title => 'Testimonials', :show_in_footer => true, :can_delete => false, :parent_id => home.id, :account_id => account_id)
         #         end
-        if @cms_config['features']['testimonials']
-          testimonials = Page.create!(:title => 'Testimonials', :body => 'Testimonials', :meta_title => 'Testimonials', :show_in_footer => true, :can_delete => false, :parent_id => home.id, :account_id => account_id)
-          Testimonial.create!(:author => "John Doe", :author_title => "Author, That Ninja Book", :quote => "This is a great resource for all things ninja-related!", :quotable_type => "Page", :quotable_id => testimonials.id, :feature => 'true', :account_id => account_id)
-          Testimonial.create!(:author => "Joe Ninja", :author_title => "Blogger, Ninja Blog", :quote => "This site has everything I ever needed!", :quotable_type => "Page", :quotable_id => testimonials.id, :feature => 'true', :account_id => account_id)
-          Testimonial.create!(:author => "Billy Bob", :author_title => "Every Day User", :quote => "I did a search regarding ninjas on google and found this to be the most complete resource available.", :quotable_type => "Page", :quotable_id => testimonials.id, :feature => 'true', :account_id => account_id)
-          Testimonial.create!(:author => "Shredder", :author_title => "Villain", :quote => "With what I learned here, I'll have an insurmountable edge over those pesky turtles.", :quotable_type => "Page", :quotable_id => testimonials.id, :feature => 'true', :account_id => account_id)
-         end
-        
+            testimonials = Page.create!(:title => 'Testimonials', :body => 'Testimonials', :meta_title => 'Testimonials', :show_in_footer => true, :can_delete => false, :parent_id => home.id, :account_id => account_id)
+            Testimonial.create!(:author => "John Doe", :author_title => "Author, That Ninja Book", :quote => "This is a great resource for all things ninja-related!", :quotable_type => "Page", :quotable_id => testimonials.id, :feature => 'true', :account_id => account_id)
+            Testimonial.create!(:author => "Joe Ninja", :author_title => "Blogger, Ninja Blog", :quote => "This site has everything I ever needed!", :quotable_type => "Page", :quotable_id => testimonials.id, :feature => 'true', :account_id => account_id)
+            Testimonial.create!(:author => "Billy Bob", :author_title => "Every Day User", :quote => "I did a search regarding ninjas on google and found this to be the most complete resource available.", :quotable_type => "Page", :quotable_id => testimonials.id, :feature => 'true', :account_id => account_id)
+            Testimonial.create!(:author => "Shredder", :author_title => "Villain", :quote => "With what I learned here, I'll have an insurmountable edge over those pesky turtles.", :quotable_type => "Page", :quotable_id => testimonials.id, :feature => 'true', :account_id => account_id)
         
         for page in Page.all
           next if page.permalink == 'home' or page.permalink == 'inquire' or page.permalink == 'inquiry_received' or page.permalink == 'documents' or page.permalink == 'terms-of-use' or page.permalink == 'privacy-policy'
@@ -501,7 +498,7 @@ pageTracker._trackPageview();
     # fake_links if @cms_config['modules']['links']
 #    fake_inquiries
     # fake_products if @cms_config['modules']['product']
-    fake_testimonials if @cms_config['modules']['product']
+    # fake_testimonials if @cms_config['modules']['product']
     fake_featurable_sections
     
     # fs = FeaturableSection.first
