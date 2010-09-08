@@ -8,7 +8,7 @@ module ActiveRecord #:nodoc:
     module ClassMethods
       def uniqueness_validation_for_meta_title
         validate_on_create :metatitle_validation
-        # after_create :update_menu_account_id
+        after_create :update_menu_account_id
         after_save :update_menu_account_id
         include ActiveRecord::Subdomainify::InstanceMethods
       end
@@ -44,11 +44,11 @@ module ActiveRecord #:nodoc:
         end
       end
       def update_menu_account_id
-        if $CURRENT_ACCOUNT
-          $CURRENT_ACCOUNT = nil
-          menu = Menu.find_all_by_navigatable_id(self.id)
-          menu.collect{|m| m.update_attributes(:account_id => self.account_id)} if menu.any?
-        end
+        current_account = $CURRENT_ACCOUNT
+        $CURRENT_ACCOUNT = nil
+        menu = Menu.find_all_by_navigatable_id(self.id)
+        menu.collect{|m| m.update_attributes(:account_id => self.account_id)} if menu.any?
+        $CURRENT_ACCOUNT = current_account
       end
       def add_account_id  
         if $CURRENT_ACCOUNT
