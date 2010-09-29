@@ -218,25 +218,32 @@ namespace :db do
     end
 
     def fake_assets
-
-      puts "Adding assets..."
-      # THESE MUST STAY IN THE SAME ORDER!
-      Asset.create!(:name => "Black Ninja", :file_file_name => "ninja_black.png", :file_file_size => 37860)
-      Asset.create!(:name => "Blue Ninja", :file_file_name => "ninja_blue.png", :file_file_size => 29432)
-      Asset.create!(:name => "Brown Ninja", :file_file_name => "ninja_brown.png", :file_file_size => 35665)
-      Asset.create!(:name => "Green Ninja", :file_file_name => "ninja_green.png", :file_file_size => 55034)
-      Asset.create!(:name => "Orange Ninja", :file_file_name => "ninja_orange.png", :file_file_size => 36686)
-      Asset.create!(:name => "Purple Ninja", :file_file_name => "ninja_purple.png", :file_file_size => 57344)
-      Asset.create!(:name => "Red Ninja", :file_file_name => "ninja_red.png", :file_file_size => 42932)
-      Asset.create!(:name => "White Ninja", :file_file_name => "ninja_white.png", :file_file_size => 39787)
+      [1, 2, 3].each do |account_id|
+        $CURRENT_ACCOUNT = Account.find(account_id)
+        puts "Adding assets..."
+        # THESE MUST STAY IN THE SAME ORDER!
+        Asset.create!(:account_id => account_id, :name => "Black Ninja", :file_file_name => "ninja_black.png", :file_file_size => 37860)
+        Asset.create!(:account_id => account_id, :name => "Blue Ninja", :file_file_name => "ninja_blue.png", :file_file_size => 29432)
+        Asset.create!(:account_id => account_id, :name => "Brown Ninja", :file_file_name => "ninja_brown.png", :file_file_size => 35665)
+        Asset.create!(:account_id => account_id, :name => "Green Ninja", :file_file_name => "ninja_green.png", :file_file_size => 55034)
+        Asset.create!(:account_id => account_id, :name => "Orange Ninja", :file_file_name => "ninja_orange.png", :file_file_size => 36686)
+        Asset.create!(:account_id => account_id, :name => "Purple Ninja", :file_file_name => "ninja_purple.png", :file_file_size => 57344)
+        Asset.create!(:account_id => account_id, :name => "Red Ninja", :file_file_name => "ninja_red.png", :file_file_size => 42932)
+        Asset.create!(:account_id => account_id, :name => "White Ninja", :file_file_name => "ninja_white.png", :file_file_size => 39787)
+      end
     end
 
     def fake_documents
-      top_folder = Folder.first
-      Folder.create!(:title => "Ninja Clothing", :permalink => "ninja-clothing", :parent_id => top_folder.id)
-      Folder.create!(:title => "Ninja Forms", :permalink => "ninja-forms", :parent_id => top_folder.id)
-      Folder.create!(:title => "Robes", :permalink => "robes", :parent_id => 2)
-      Folder.create!(:title => "Gi's'", :permalink => "gi-s", :parent_id => 2)
+      $CURRENT_ACCOUNT = nil
+      atts = Folder.first.attributes
+      [1, 2, 3].each do |account_id|
+        $CURRENT_ACCOUNT = Account.find(account_id)
+        top_folder = Folder.find_or_create_by_account_id(atts.reject{|key, value| key == :account_id}.merge({:account_id => account_id}))
+        Folder.create!(:account_id => account_id, :title => "Ninja Clothing", :permalink => "ninja-clothing", :parent_id => top_folder.id)
+        Folder.create!(:account_id => account_id, :title => "Ninja Forms", :permalink => "ninja-forms", :parent_id => top_folder.id)
+        Folder.create!(:account_id => account_id, :title => "Robes", :permalink => "robes", :parent_id => 2)
+        Folder.create!(:account_id => account_id, :title => "Gi's'", :permalink => "gi-s", :parent_id => 2)
+      end
     end
     if @cms_config['modules']['galleries']
       def fake_galleries
@@ -288,42 +295,47 @@ namespace :db do
      end
     if @cms_config['modules']['events']
       def fake_events
-        puts 'Faking events...'
-        i = 0
-        Event.populate 30 do |e|
-      
-          e.name = Faker::Company.catch_phrase.titleize
-          puts "- \"#{e.name}\"" if (i % 10 == 0)
-          e.person_id = $USERS.rand.id
-          e.address = "#{rand(1400)+100} State St, Santa Barbara, CA"
-          e.description = generate_random_body_content
-          e.blurb = $BLURB
-          e.date_and_time = 3.months.ago..1.year.from_now
-          e.images_count = 0
-          e.features_count = 0
-          if rand(4) == 0
-            e.registration = true
-            e.allow_cash = [true, false]
-            e.allow_card = [true, false]
-            e.allow_check = [true, false]
-            e.payment_instructions = random_pirate_sentence
-            if rand(2) == 0
-              e.registration_limit = [10, 50, 100, 200, 500]
-              e.registration_closed_text = Populator.paragraphs(1)
-            else
-              e.registration_limit = 0
+        [1, 2, 3].each do |account_id|
+          $CURRENT_ACCOUNT = Account.find(account_id)
+          puts 'Faking events...'
+          i = 0
+          Event.populate 30 do |e|
+          
+            e.name = Faker::Company.catch_phrase.titleize
+            puts "- \"#{e.name}\"" if (i % 10 == 0)
+            e.person_id = User.all.rand.id
+            e.address = "#{rand(1400)+100} State St, Santa Barbara, CA"
+            e.description = generate_random_body_content
+            e.blurb = $BLURB
+            e.date_and_time = 3.months.ago..1.year.from_now
+            e.images_count = 0
+            e.features_count = 0
+            e.account_id = account_id
+            if rand(4) == 0
+              e.registration = true
+              e.allow_cash = [true, false]
+              e.allow_card = [true, false]
+              e.allow_check = [true, false]
+              e.payment_instructions = random_pirate_sentence
+              if rand(2) == 0
+                e.registration_limit = [10, 50, 100, 200, 500]
+                e.registration_closed_text = Populator.paragraphs(1)
+              else
+                e.registration_limit = 0
+              end
             end
+            i = i + 1
           end
-          i = i + 1
-        end
-      
-        puts 'Making permalinks...'
-        for event in Event.all
-          event.update_attribute(:permalink, make_permalink(event.name))
-          EventPriceOption.populate rand(10) do |p|
-            p.event_id = event.id
-            p.description = Populator.words(1..2)
-            p.price = [5.0, 10.0, 15.0, 20.0, 50.0, 100.0]
+          
+          puts 'Making permalinks...'
+          for event in Event.all
+            event.update_attribute(:permalink, make_permalink(event.name))
+            EventPriceOption.populate rand(10) do |p|
+              p.event_id = event.id
+              p.account_id = event.account_id
+              p.description = Populator.words(1..2)
+              p.price = [5.0, 10.0, 15.0, 20.0, 50.0, 100.0]
+            end
           end
         end
       end
@@ -341,53 +353,56 @@ namespace :db do
     end
 
     def fake_links
-      ['Web Design','Martial Arts','Sabotage','Assassination','Espionage','Illusion','Clothing/Image','Weapons & Tactics'].each do |lc|
-        c = LinkCategory.create!(:title => lc, :permalink => make_permalink(lc))
+      [1, 2, 3].each do |account_id|
+        $CURRENT_ACCOUNT = Account.find(account_id)
+        ['Web Design','Martial Arts','Sabotage','Assassination','Espionage','Illusion','Clothing/Image','Weapons & Tactics'].each do |lc|
+          c = LinkCategory.create!(:title => lc, :permalink => make_permalink(lc), :account_id => account_id)
+        end
+        Link.create!(:account_id => account_id, :title => "Ameravant", :link_category_id => 1 + (8 * (account_id -1)), :url => "http://www.ameravant.com", :public => true, :featured => true, :blurb => "Ameravant prides themselves on building standards-based websites that are easy to use with cutting edge technology that gives you full control over your content.", :body => "Ameravant is an innovative web design and development company based in Santa Barbara, CA which was founded in 2001 by Michael Kramer. We specialize in creating content management systems for small and medium businesses. What does this mean? Basically, we put you in control of nearly every aspect of your website. We eliminate the need for you to contact us if you need a paragraph of text changed on your About Us page, or a new photo added to a slideshow you've made for a company event.")
+        Link.create!(:account_id => account_id, :title => "Site Ninja", :link_category_id => 2 + (8 * (account_id -1)), :url => "http://www.site-ninja.com", :public => true, :featured => true, :blurb => "Site Ninja is a simple content management system.")
+        Link.create!(:account_id => account_id, :title => "Ninja on Wikipedia", :link_category_id => 2 + (8 * (account_id -1)), :url => "http://en.wikipedia.org/wiki/Ninja", :public => true, :featured => true, :blurb => "A ninja or shinobi was a covert agent or mercenary of feudal Japan specializing in unorthodox arts of war. The functions of the ninja included espionage, sabotage, infiltration, assassination, as well as open combat in certain situations. The underhanded tactics of the ninja were contrasted with the samurai, who were careful not to tarnish their reputable image.", :body => "The origin of the ninja is obscure and difficult to determine, but can be surmised to be around the 14th century. Few written records exist to detail the activities of the ninja. The word shinobi did not exist to describe a ninja-like agent until the 15th century, and it is unlikely that spies and mercenaries prior to this time were seen as a specialized group. In the unrest of the Sengoku period (15th - 17th centuries), mercenaries and spies for hire arose out of the Iga and Kōga regions of Japan, and it is from these clans that much of later knowledge regarding the ninja is inferred. Following the unification of Japan under the Tokugawa shogunate, the ninja descended again into obscurity. However, in the 17th and 18th centuries, manuals such as the Bansenshukai (1676) — often centered around Chinese military philosophy — appeared in significant numbers. These writings revealed an assortment of philosophies, religious beliefs, their application in warfare, as well as the espionage techniques that form the basis of the ninja's art. The word ninjutsu would later come to describe a wide variety of practices related to the ninja.")
+        Link.create!(:account_id => account_id, :title => "Espionage on Wikipedia", :link_category_id => 5 + (8 * (account_id -1)), :url => "http://en.wikipedia.org/wiki/Espionage", :public => true, :featured => true, :blurb => "Espionage or spying involves an individual obtaining information that is considered secret or confidential without the permission of the holder of the information.", :body => "Espionage or spying involves an individual obtaining information that is considered secret or confidential without the permission of the holder of the information. Espionage is inherently clandestine, as the legitimate holder of the information may change plans or take other countermeasures once it is known that the information is in unauthorized hands. See clandestine HUMINT for the basic concepts of such information collection, and subordinate articles such as clandestine HUMINT operational techniques and clandestine HUMINT asset recruiting for discussions of the \"tradecraft\" used to collect this information.")
+        Link.create!(:account_id => account_id, :title => "Sabotage", :link_category_id => 3 + (8 * (account_id -1)), :url => "http://en.wikipedia.org/wiki/Sabotage", :blurb => "Sabotage is a deliberate action aimed at weakening another entity through subversion, obstruction, disruption, and/or destruction. In a workplace setting, sabotage is the conscious withdrawal of efficiency generally directed at causing some change in workplace conditions. One who engages in sabotage is a saboteur.", :public => true, :featured => true)
+        for link in Link.all
+          link.permalink = make_permalink(link.title)
+          link.save!
+        end
+        make_tags(Link.all)
       end
-      Link.create!(:title => "Ameravant", :link_category_id => 1, :url => "http://www.ameravant.com", :public => true, :featured => true, :blurb => "Ameravant prides themselves on building standards-based websites that are easy to use with cutting edge technology that gives you full control over your content.", :body => "Ameravant is an innovative web design and development company based in Santa Barbara, CA which was founded in 2001 by Michael Kramer. We specialize in creating content management systems for small and medium businesses. What does this mean? Basically, we put you in control of nearly every aspect of your website. We eliminate the need for you to contact us if you need a paragraph of text changed on your About Us page, or a new photo added to a slideshow you've made for a company event.")
-      Link.create!(:title => "Site Ninja", :link_category_id => 2, :url => "http://www.site-ninja.com", :public => true, :featured => true, :blurb => "Site Ninja is a simple content management system.")
-      Link.create!(:title => "Ninja on Wikipedia", :link_category_id => 2, :url => "http://en.wikipedia.org/wiki/Ninja", :public => true, :featured => true, :blurb => "A ninja or shinobi was a covert agent or mercenary of feudal Japan specializing in unorthodox arts of war. The functions of the ninja included espionage, sabotage, infiltration, assassination, as well as open combat in certain situations. The underhanded tactics of the ninja were contrasted with the samurai, who were careful not to tarnish their reputable image.", :body => "The origin of the ninja is obscure and difficult to determine, but can be surmised to be around the 14th century. Few written records exist to detail the activities of the ninja. The word shinobi did not exist to describe a ninja-like agent until the 15th century, and it is unlikely that spies and mercenaries prior to this time were seen as a specialized group. In the unrest of the Sengoku period (15th - 17th centuries), mercenaries and spies for hire arose out of the Iga and Kōga regions of Japan, and it is from these clans that much of later knowledge regarding the ninja is inferred. Following the unification of Japan under the Tokugawa shogunate, the ninja descended again into obscurity. However, in the 17th and 18th centuries, manuals such as the Bansenshukai (1676) — often centered around Chinese military philosophy — appeared in significant numbers. These writings revealed an assortment of philosophies, religious beliefs, their application in warfare, as well as the espionage techniques that form the basis of the ninja's art. The word ninjutsu would later come to describe a wide variety of practices related to the ninja.")
-      Link.create!(:title => "Espionage on Wikipedia", :link_category_id => 5, :url => "http://en.wikipedia.org/wiki/Espionage", :public => true, :featured => true, :blurb => "Espionage or spying involves an individual obtaining information that is considered secret or confidential without the permission of the holder of the information.", :body => "Espionage or spying involves an individual obtaining information that is considered secret or confidential without the permission of the holder of the information. Espionage is inherently clandestine, as the legitimate holder of the information may change plans or take other countermeasures once it is known that the information is in unauthorized hands. See clandestine HUMINT for the basic concepts of such information collection, and subordinate articles such as clandestine HUMINT operational techniques and clandestine HUMINT asset recruiting for discussions of the \"tradecraft\" used to collect this information.")
-      Link.create!(:title => "Sabotage", :link_category_id => 3, :url => "http://en.wikipedia.org/wiki/Sabotage", :blurb => "Sabotage is a deliberate action aimed at weakening another entity through subversion, obstruction, disruption, and/or destruction. In a workplace setting, sabotage is the conscious withdrawal of efficiency generally directed at causing some change in workplace conditions. One who engages in sabotage is a saboteur.", :public => true, :featured => true)
-      for link in Link.all
-        link.permalink = make_permalink(link.title)
-        link.save!
-      end
-      make_tags(Link.all)
     end
     if @cms_config['modules']['store']
       def fake_products
-        puts "Faking products..."
-        ProductCategory.create!(:name => 'Ninja Weapons', :permalink => 'ninja-weapons')
-        ProductCategory.create!(:name => 'Ninja Stealth Products', :permalink => 'ninja-stealth-products')
-        Product.populate 10 do |p|
-          p.title = Faker::Company.catch_phrase.titleize
-          p.permalink = make_permalink(p.title)
-          p.description = random_pirate_paragraphs(at_least=1, at_most=2, for_html=false)
-          p.blurb = random_pirate_sentence
-          p.featured = true if rand(10) == 0
-          p.images_count = 0
-          p.features_count = 0
-          p.display_add_cart = 1
-          p.active = true
-          p.deleted = false
-          p.created_at = 1.year.ago..Time.now
-          p.updated_at = p.created_at
-          po = ProductOption.new(:price => rand(30), :available => true)
-          po.save!
-          p.product_options << po
-          p.save!
+        [1, 2, 3].each do |account_id|
+          $CURRENT_ACCOUNT = Account.find(account_id)
+          puts "Faking products..."
+          ProductCategory.create!(:account_id => account_id, :name => 'Ninja Weapons', :permalink => 'ninja-weapons')
+          ProductCategory.create!(:account_id => account_id, :name => 'Ninja Stealth Products', :permalink => 'ninja-stealth-products')
+          Product.populate 10 do |p|
+            p.title = Faker::Company.catch_phrase.titleize
+            p.permalink = make_permalink(p.title)
+            p.description = random_pirate_paragraphs(at_least=1, at_most=2, for_html=false)
+            p.blurb = random_pirate_sentence
+            p.featured = true if rand(10) == 0
+            p.images_count = 0
+            p.features_count = 0
+            p.display_add_cart = 1
+            p.active = true
+            p.deleted = false
+            p.account_id = account_id
+            p.created_at = 1.year.ago..Time.now
+            p.updated_at = p.created_at
+          end
+          
+          for product in Product.all
+            product.product_options << ProductOption.new(:price => rand(30), :available => true, :account_id => account_id)
+            product.product_categories <<  ProductCategory.find(rand(ProductCategory.all.size - 1) + (2 * (account_id - 1)) + 1)
+          end
+          Image.create!(:account_id => account_id, :title => "Katana", :viewable_id => 1, :viewable_type => "Product", :position => 8, :image_file_name => "00-7X128_2.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 54406)
+          Image.create!(:account_id => account_id, :title => "Sais", :viewable_id => 2, :viewable_type => "Product", :position => 5, :image_file_name => "20-2312_1.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 48938)
+          Image.create!(:account_id => account_id, :title => "Black sais", :viewable_id => 3, :viewable_type => "Product", :position => 6, :image_file_name => "325.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 47184)
+          Image.create!(:account_id => account_id, :title => "Katana on rack", :viewable_id => 4, :viewable_type => "Product", :position => 1, :image_file_name => "552119_craneall.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 136353)
+          Image.create!(:account_id => account_id, :title => "Custom katana hilt and sheath", :viewable_id => 5, :viewable_type => "Product", :position => 9, :image_file_name => "309358210_294f9bef3f_o.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 196056)
         end
-      
-        for product in Product.all
-          product.product_categories <<  ProductCategory.find(rand(ProductCategory.count) + 1)
-        end
-        Image.create!(:title => "Katana", :viewable_id => 1, :viewable_type => "Product", :position => 8, :image_file_name => "00-7X128_2.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 54406)
-        Image.create!(:title => "Sais", :viewable_id => 2, :viewable_type => "Product", :position => 5, :image_file_name => "20-2312_1.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 48938)
-        Image.create!(:title => "Black sais", :viewable_id => 3, :viewable_type => "Product", :position => 6, :image_file_name => "325.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 47184)
-        Image.create!(:title => "Katana on rack", :viewable_id => 4, :viewable_type => "Product", :position => 1, :image_file_name => "552119_craneall.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 136353)
-        Image.create!(:title => "Custom katana hilt and sheath", :viewable_id => 5, :viewable_type => "Product", :position => 9, :image_file_name => "309358210_294f9bef3f_o.jpg.jpeg", :image_content_type => "image/jpeg", :image_file_size => 196056)
-      
       end
       
       def fake_orders
@@ -396,36 +411,39 @@ namespace :db do
     end
 
     def fake_inquiries
-      puts 'Faking inquiries...'
-      Inquiry.populate 10 do |i|
-        i.name = [Faker::Name.name, Faker::Name.name, Faker::Name.first_name]
-        i.email = [Faker::Internet.email, Faker::Internet.free_email]
-        i.phone = [nil, nil, Faker::PhoneNumber.phone_number]
-        i.inquiry = random_pirate_paragraphs(at_least=1, at_most=2, for_html=false)
-        i.created_at = 6.months.ago..Time.now
-        i.updated_at = i.created_at
+      [1, 2, 3].each do |account_id|
+        $CURRENT_ACCOUNT = Account.find(account_id)
+        puts 'Faking inquiries...'
+        Inquiry.populate 10 do |i|
+          i.name = [Faker::Name.name, Faker::Name.name, Faker::Name.first_name]
+          i.email = [Faker::Internet.email, Faker::Internet.free_email]
+          i.phone = [nil, nil, Faker::PhoneNumber.phone_number]
+          i.inquiry = random_pirate_paragraphs(at_least=1, at_most=2, for_html=false)
+          i.created_at = 6.months.ago..Time.now
+          i.updated_at = i.created_at
+        end
       end
     end
 
     puts 'Adding role groups...'
-      [1, 2, 3].each do |account_id|
-        $CURRENT_ACCOUNT = Account.find(account_id)
-        admin = PersonGroup.create!(:title => "Admin", :role => true, :public => false, :description => "Has access to all areas of the CMS.", :account_id => account_id)
-        author = PersonGroup.create!(:title => "Author", :role => true, :public => false, :description => "Can write and publish their own articles.", :account_id => account_id)
-        editor = PersonGroup.create!(:title => "Editor", :role => true, :public => false, :description => "Can write, edit, and publish any article, and moderates comments.", :account_id => account_id)
-        contributor = PersonGroup.create!(:title => "Contributor", :role => true, :public => false, :description => "Can write their own articles, but cannot publish them.", :account_id => account_id)
-        moderator = PersonGroup.create!(:title => "Moderator", :role => true, :public => false, :description => "Can moderate comments.", :account_id => account_id)
-        member = PersonGroup.create!(:title => "Member", :role => true, :public => false, :description => "Has access to member areas.", :account_id => account_id)
-        newsletter = PersonGroup.create!(:title => "Newsletter", :role => false, :public => true, :description => "Subscribe to the newsletter.", :account_id => account_id)
-        puts 'Adding users...'
-      end
+    [1, 2, 3].each do |account_id|
+      $CURRENT_ACCOUNT = Account.find(account_id)
+      admin = PersonGroup.create!(:title => "Admin", :role => true, :public => false, :description => "Has access to all areas of the CMS.", :account_id => account_id)
+      author = PersonGroup.create!(:title => "Author", :role => true, :public => false, :description => "Can write and publish their own articles.", :account_id => account_id)
+      editor = PersonGroup.create!(:title => "Editor", :role => true, :public => false, :description => "Can write, edit, and publish any article, and moderates comments.", :account_id => account_id)
+      contributor = PersonGroup.create!(:title => "Contributor", :role => true, :public => false, :description => "Can write their own articles, but cannot publish them.", :account_id => account_id)
+      moderator = PersonGroup.create!(:title => "Moderator", :role => true, :public => false, :description => "Can moderate comments.", :account_id => account_id)
+      member = PersonGroup.create!(:title => "Member", :role => true, :public => false, :description => "Has access to member areas.", :account_id => account_id)
+      newsletter = PersonGroup.create!(:title => "Newsletter", :role => false, :public => true, :description => "Subscribe to the newsletter.", :account_id => account_id)
+      puts 'Adding groups...'
+    end
 
     # actually do stuff here...
     [1, 2, 3].each do |account_id|
       $CURRENT_ACCOUNT = Account.find(account_id)
-      person = Person.create!(:first_name => "admin-#{account_id}", :last_name => "admin-#{account_id}", :email => "admin-#{account_id}@mailinator.com", :account_id => account_id)
+      person = Person.create!(:first_name => "admin", :last_name => "admin", :email => "admin@mailinator.com", :account_id => account_id)
       person.person_groups << PersonGroup.find_by_title("Admin")
-      user = User.create!(:login => "admin-#{account_id}", :password => "admin#{account_id}", :password_confirmation => "admin#{account_id}", :active => true, :account_id => account_id)
+      user = User.create!(:login => "admin", :password => "admin", :password_confirmation => "admin", :active => true, :account_id => account_id)
       user.person_id = person.id
       user.save!
             
@@ -459,18 +477,20 @@ namespace :db do
       user = User.create!(:login => 'leonardo', :password => 'leonardo', :password_confirmation => 'leonardo', :active => true, :account_id => account_id)
       user.person_id = person.id
       user.save!
+      puts "Adding People...account_id is #{$CURRENT_ACCOUNT.id}"
     end
     def fake_featurable_sections
       [2, 3].each do |account_id|
         $CURRENT_ACCOUNT = Account.find(account_id)
-        fs = FeaturableSection.new(:title => "Home Page Feature Box", :image_required => true, :site_wide => false, :account_id => account_id)
+        fs = FeaturableSection.create(:title => "Home Page Feature Box", :image_required => true, :site_wide => false, :account_id => account_id)
       end 
     end
     
-
-    $USERS = User.all
+    [1, 2, 3].each do |account_id|
+    $CURRENT_ACCOUNT = Account.find(account_id)
 
     Setting.create!(
+      :account_id => account_id,
       :newsletter_from_email => 'admin@ameravant.com',
       :footer_text => '<p style="text-align: center;">&copy; 2008-#YEAR# Site-Ninja.com</p>
 <p style="text-align: center;"><a href="/" class="icon"><img title="SiteNinja Homepage" src="/system/files/1/thumb/ninja_black.png" alt="Black Ninja" width="48" height="45" border="0" /></a></p>',
@@ -487,6 +507,7 @@ var pageTracker = _gat._getTracker("UA-7311013-1");
 pageTracker._trackPageview();
 } catch(err) {}</script>'
     )
+  end
     fake_assets # keep this line first
     fake_pages
     Page.all.collect{|p| p.save!}
@@ -494,10 +515,10 @@ pageTracker._trackPageview();
     fake_articles if @cms_config['modules']['blog']
     fake_galleries if @cms_config['modules']['galleries']
     
-    # fake_documents if @cms_config['modules']['documents']
-    # fake_links if @cms_config['modules']['links']
-#    fake_inquiries
-    # fake_products if @cms_config['modules']['product']
+    fake_documents if @cms_config['modules']['documents']
+    fake_links if @cms_config['modules']['links']
+    fake_inquiries
+    fake_products if @cms_config['modules']['product']
     # fake_testimonials if @cms_config['modules']['product']
     fake_featurable_sections
     

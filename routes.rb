@@ -1,21 +1,18 @@
-# resources :events, :as => events_path, :has_many => :images, :collection => { :past => :get } do |event|
-#   event.resources :event_registration_groups,
-#     :belongs_to => :people,
-#     :has_many => :event_registrations,
-#     :member => { :pay => :get, :complete => :get }
+klasses = []
+Klasses.each do |klass|
+  if ActiveRecord::Base.connection.tables.include?(klass.table_name)
+    klasses << klass.table_name.to_sym
+  end
+end
+namespace :admin do |admin|
+  admin.resources :accounts do |account| 
+    for klass in klasses
+      account.resources klass
+    end
+  end
+end
+# for klass in klasses
+#   resources klass, :belongs_to => :account
 # end
-# 
-# namespace :admin do |admin|
-#   admin.resources :events, :has_many => [ :event_price_options, :features, :assets ] do |event|
-#   admin.resources :event_categories, :has_many => { :features, :menus } do |event_category|
-#     event_category.resources :menus
-#     event_category.resources :images, :member => { :reorder => :put }, :collection => { :reorder => :put }
-#   end
-#     event.resources :images, :member => { :reorder => :put }, :collection => { :reorder => :put }
-#     event.resources :event_registration_groups,
-#       :has_many => :contacts,
-#       :member => {:paid => :get, :unpaid => :get }, 
-#       :collection => {:csv => :get}
-#   end
-# end
-# resources :event_categories
+    
+    
