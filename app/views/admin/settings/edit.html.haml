@@ -1,0 +1,232 @@
+- content_for :meta_title do
+  CMS Settings
+- content_for :head do
+  :javascript
+    jQuery(function() { 
+    // setup ul.tabs to work as tabs for each div directly under div.panes 
+    jQuery("ul.tabs").tabs("div.panes > div.panel"); 
+    });
+  %style{:type => "text/css"}
+    ul.tabs { list-style: none; margin: 0; padding: 0; position: relative; top: 1px }
+    ul.tabs li { display: block; float: left; }
+    ul.tabs li a { display: block; float: left; padding: 0 10px 0 10px; border: 1px solid #999; background: #ccc; text-decoration: none; -webkit-border-radius: 4px 4px 0 0; -moz-border-radius: 4px 4px 0 0; color: #666; }
+    ul.tabs li a:focus { outline: none; }
+    ul.tabs li a:hover { color: #333 !important; background: #aaa !important; }
+    ul.tabs li a.current { background: #fff; border-bottom: 1px solid #fff; }
+    ul.tabs li a.current:hover { background: #fff !important; }
+    div.panes { border: 1px solid #999; background: #fff; padding: 10px; }
+    label { display: block; font-size: 1.3em; line-height: 2em; margin: 10px 0 0; color: #333; }
+    label.inline { display: inline; }
+    label:hover { background: none !important; color: #999; }
+    input { font-size: 1.3em; }
+    
+%h1= yield(:meta_title).strip
+%ul.tabs
+  %li= link_to("Template", "#")
+  %li= link_to("Homepage", "#")
+  %li= link_to("Inquiry Form", "#")
+  - if @cms_config['modules']['events']
+    %li= link_to("Events", "#")
+  - if @cms_config['modules']['blog']
+    %li= link_to("Blog", "#")
+  - if @cms_config['modules']['newsletters']
+    %li= link_to("Newsletter", "#")
+  %li= link_to("Advanced", "#")
+= clear
+- form_for :settings, :url => admin_setting_path, :html => { :method => :put, :multipart => true, :onsubmit => "form_submitted();", :id => "setting-form" } do |f|
+  = f.error_messages
+  .panes
+    .panel
+      %h2 Template Settings
+      = link_to("Manage Side Column", admin_column_sections_path(:params => {:column => "side"}))
+      -unless setting_restricted?(:logo)
+        %div
+          = f.label :logo ,"Left Header Image"
+          = f.file_field :logo
+          -if !@settings.logo_file_name.blank?
+            %br
+            = image_tag @settings.logo(:small)
+            = check_box_tag 'logo_remove'
+            = label_tag :logo_remove, "Remove", :class => "inline"
+      -unless setting_restricted?(:header_right)
+        %div
+          = f.label :header_right, "Right Header Image"
+          = f.file_field :header_right
+          - if !@settings.header_right_file_name.blank?
+            %br
+            = image_tag @settings.header_right(:medium), :alt => ""
+            = check_box_tag 'header_right_remove'
+            = label_tag :header_right_remove, "Remove", :class => "inline"
+      %div
+        = f.label :header_right_url, "Url for right header"
+        = f.text_field :header_right_url
+      %div
+        = f.label :favicon
+        = f.file_field :favicon
+        - if !@settings.favicon_file_name.blank?
+          %br
+          = image_tag @settings.favicon(:original), :alt => "favicon"
+          = check_box_tag 'favicon_remove'
+          = label_tag :favicon_remove, "Remove", :class => "inline"
+      %div
+        = f.label :tracking_code
+        = f.text_area :tracking_code, :size => '80x5'
+      %div
+        = f.label :header_text
+        = f.text_area :header_text, :size => '80x15', :class => "mceEditor"
+      %div
+        = f.label :side_column_text
+        = f.text_area :side_column_text, :size => '80x15', :class => "mceEditor"
+      %div
+        = f.label :footer_text
+        = f.text_area :footer_text, :size => '80x15', :class => "mceEditor"
+        .gray You may have the current year inserted by typing <strong>#YEAR#</strong>.
+    - if @cms_config['features']['feature_box']
+      .panel
+        %h2 Homepage Options
+        %div
+        = f.label :homepage_banner
+        .gray The banner appears below the menu and above the featured content on the homepage.
+        = f.text_area :homepage_banner, :size => '80x15', :class => "mceEditor"
+        - if @cms_config['features']['feature_box']
+          %h3 Featured Content
+          %div
+            = f.check_box :show_features
+            = f.label :show_features, "Show Features Slideshow", :class => "inline"
+          %div
+            = check_box_tag 'cms[wide_feature_box]' , true, @cms_config['site_settings']['wide_feature_box']
+            = label_tag 'cms[wide_feature_box]', "Show Feature Box in Wide Format", :class => "inline"
+          %div
+            = f.check_box :show_feature_thumbs
+            = f.label :show_feature_thumbs, "Show thumbnails under Feature Slideshow", :class => "inline"
+          %div
+            = label_tag 'cms[feature_box_overlay_position]', "Feature Box Overlay Position"
+            = select_tag 'cms[feature_box_overlay_position]', options_for_select(["top", "bottom", "left", "right", "hidden", "custom"], :selected => @cms_config['site_settings']['feature_box_overlay_position'])
+    .panel
+      %h2 Contact Us Page Inquiries
+      %div
+        = f.label :inquiry_notification_email, "Inquiry email address"
+        = f.text_field :inquiry_notification_email
+      %div
+        = f.label :inquiry_confirmation_subject_line
+        = f.text_field :inquiry_confirmation_subject_line
+      %div
+        = f.label :inquiry_confirmation_message
+        = f.text_area :inquiry_confirmation_message, :size => '80x15', :class => "mceEditor"
+    - if @cms_config['modules']['events']
+      .panel
+        %h2 Events
+        %div
+          = f.label :events_range, "Events range to display"
+          = f.select :events_range, {"One week" => 1, "One month" => 2, "Three months" => 3, "One year" => 4, "All" => 5}
+        %div
+          = label_tag 'cms[events_title]', "Name for events"
+          = text_field_tag 'cms[events_title]', @cms_config['site_settings']['events_title']
+        %div
+          = label_tag 'cms[event_title]', "Name for individual event"
+          = text_field_tag 'cms[event_title]', @cms_config['site_settings']['event_title']
+        %div
+          = check_box_tag 'cms[show_past_events]', true, @cms_config['site_settings']['show_past_events']
+          = label_tag 'cms[show_past_events]', "Show Past Events", :class => "inline"
+        %div
+          = label_tag 'cms[google_maps]', "Google Maps key"
+          = text_area_tag 'cms[google_maps]', @cms_config['keys']['google_maps'], :size => "40x3"
+    - if @cms_config['modules']['blog']
+      .panel
+        %h2 Blog
+        
+        %div
+          = f.check_box :comment_profanity_filter, :class => "inline"
+          = f.label :comment_profanity_filter, "Automatically filter profanity from comments", :class => "inline"
+        %div
+          = f.check_box :show_categories_in_sidebar, :class => "inline"
+          = f.label :show_categories_in_sidebar, "Show Categories in Sidebar", :class => "inline"
+        %div
+          = f.check_box :show_archive_in_sidebar, :class => "inline"
+          = f.label :show_archive_in_sidebar, "Show Archive in Sidebar", :class => "inline"
+        %div
+          = f.check_box :show_authors_in_sidebar, :class => "inline"
+          = f.label :show_authors_in_sidebar, "Show Authors in Sidebar", :class => "inline"
+        %div
+          = f.check_box :show_tags_in_sidebar, :class => "inline"
+          = f.label :show_tags_in_sidebar, "Show Tags in Sidebar", :class => "inline"
+    - if @cms_config['modules']['newsletters']
+      .panel
+        %h2 Newsletters
+        -unless setting_restricted?(:newsletter_logo)
+          %div
+            =f.label :newsletter_logo, "Upload a logo file you'd like to appear at the top of your newsletters."
+            =f.file_field :newsletter_logo
+          -if !@settings.newsletter_logo_file_name.blank?
+            %br
+            = image_tag @settings.newsletter_logo(:small)
+            = f.check_box :remove_newsletter_logo, :value => true
+            = f.label :remove_newsletter_logo, "Remove logo from newsletters", :class => "inline"
+        %div
+          
+        %div
+          = f.label :newsletter_footer_text
+          = f.text_area :newsletter_footer_text, :size => '80x15', :class => "mceEditor"
+        %div
+          = f.check_box :newsletter_border
+          = f.label :newsletter_border, "Add a border to your newsletters?", :class => "inline"
+        %h2 Sign Up Box Options
+        %div
+          = label_tag 'cms[signup_title]', "Sign Up Box Title"
+          = text_field_tag 'cms[signup_title]', @cms_config['site_settings']['signup_title']
+        %div
+          = label_tag 'cms[signup_description]', "Sign Up Box Description"
+          = text_area_tag 'cms[signup_description]', @cms_config['site_settings']['signup_description'], :size => '80x15', :class => "mceEditor"
+    .panel
+      %h2 Advanced Settings
+      = link_to("Redirect old pages to new pages", admin_redirects_path)
+      - if CMS_CONFIG['modules']['blog']
+        %div
+          = label_tag 'cms[blog_title]', "Name for blog"
+          = text_field_tag 'cms[blog_title]', @cms_config['site_settings']['blog_title']
+        %div
+          = label_tag 'cms[article_title]', "Name for article"
+          = text_field_tag 'cms[article_title]', @cms_config['site_settings']['article_title']
+      - if @cms_config['modules']['links']
+        %div
+          = label_tag 'cms[links_title]', "Name for link"
+          = text_field_tag 'cms[links_title]', @cms_config['site_settings']['links_title']
+      %div
+        = f.label :stylesheet
+        .gray Overwrites the selected template with a custom stylesheet.
+        = f.text_area :stylesheet, :size => '80x20', :style => "font-size: .8em;"
+      -unless setting_restricted?(:additional_styles)
+        %div
+          = f.label :additional_styles
+          .gray Additional styles can be used to overwrite styles in the template without removing all other formatting.
+          = f.text_area :additional_styles, :size => '80x20', :style => "font-size: .8em;"
+      %div
+        = check_box_tag 'cms[private]' , true, @cms_config['site_settings']['private']
+        = label_tag 'cms[private]', "Keep entire site behind login", :class => "inline"
+      %div
+        %h2 Edit featurable sections
+        =link_to "Edit featurable sections", admin_featurable_sections_path
+        = label_tag 'cms[google_maps]', 'Google Maps & Search API Key'
+        = text_field_tag 'cms[google_maps]', @cms_config['keys']['google_maps'], :style => "width: 600px; font-size: .8em;"
+      - if CMS_CONFIG['modules']['store']
+        %h2 Store Settings
+        %div
+          = label_tag 'cms[google_merchant_id]', 'Google Merchant ID'
+          = text_field_tag 'cms[google_merchant_id]', @cms_config['site_settings']['google_merchant_id']	
+      %h2 Sendgrid Settings
+      %div
+        = label_tag 'cms[sendgrid_username]', 'Sendgrid Username'
+        = text_field_tag 'cms[sendgrid_username]', @cms_config['site_settings']['sendgrid_username']
+      %div
+        = label_tag 'cms[sendgrid_password]', 'Sendgrid Password'
+        = text_field_tag 'cms[sendgrid_password]', @cms_config['site_settings']['sendgrid_password']
+      -if $CURRENT_ACCOUNT.is_master?
+        %h2 Restricted Fields
+        %ul
+          - for field in ['header_right', 'additional_styles', 'newsletter_logo']
+            %li
+              = label_tag'cms[restricted_fields]', field.gsub('_', ' ').capitalize
+              = check_box_tag 'cms[restricted_fields][]', field, @cms_config['site_settings']['restricted_fields'].include?(field) 
+  - fancy_submit '/admin' do
+    = f.submit "Save settings"
+
