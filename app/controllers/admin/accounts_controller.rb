@@ -24,24 +24,34 @@ class Admin::AccountsController < AdminController
   
   private
   def add_cms_to_shared
-    path = Rails.env.production? ? RAILS_ROOT.gsub(/(\/data\/)(\S*)\/releases\S*/, '\1\2') + "/current" : RAILS_ROOT
-    make_initial_subdomain_folder(path) unless File.exists?("#{path}/config/subdomains") && File.exists?("#{path}/shared/config")
-    system "mkdir #{path}/config/subdomains/#{@account.subdomain}"
-    system "mv #{path}/config/subdomains/#{@account.subdomain} #{path}/shared/config/subdomains/"
-    system "ln -s #{path}/shared/config/subdomains/#{@account.subdomain} #{path}/config/subdomains/#{@account.subdomain}"
-    system "cp #{path}/config/cms.yml #{path}/shared/config/subdomains/#{@account.subdomain}/cms.yml"
-    cms_yml = YAML::load_file("#{path}/shared/config/subdomains/#{@account.subdomain}/cms.yml")
-    cms_yml['website']['name'] = "#{@account.name.strip}"
-    File.open("#{path}/config/subdomains/#{@account.subdomain}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
+    if Rails.env.production?
+      path = RAILS_ROOT.gsub(/(\/data\/)(\S*)\/releases\S*/, '\1\2')
+      make_initial_subdomain_folder(path) unless File.exists?("#{path}/config/subdomains") && File.exists?("#{path}/shared/config")
+      system "mkdir #{path}/current/config/subdomains/#{@account.subdomain}"
+      system "mv #{path}/current/config/subdomains/#{@account.subdomain} #{path}/shared/config/subdomains/"
+      system "ln -s #{path}/shared/config/subdomains/#{@account.subdomain} #{path}/current/config/subdomains/#{@account.subdomain}"
+      system "cp #{path}/current/config/cms.yml #{path}/shared/config/subdomains/#{@account.subdomain}/cms.yml"
+      cms_yml = YAML::load_file("#{path}/shared/config/subdomains/#{@account.subdomain}/cms.yml")
+      cms_yml['website']['name'] = "#{@account.name.strip}"
+      File.open("#{path}/shared/config/subdomains/#{@account.subdomain}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
+    else
+      path = RAILS_ROOT
+      make_initial_subdomain_folder(path) unless File.exists?("#{path}/config/subdomains") && File.exists?("#{path}/shared/config")
+      system "mkdir #{path}/config/subdomains/#{@account.subdomain}"
+      system "cp #{path}/config/cms.yml #{path}/config/subdomains/#{@account.subdomain}/cms.yml"
+      cms_yml = YAML::load_file("#{path}/config/subdomains/#{@account.subdomain}/cms.yml")
+      cms_yml['website']['name'] = "#{@account.name.strip}"
+      File.open("#{path}/config/subdomains/#{@account.subdomain}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
+    end
   end
   
   def make_initial_subdomain_folder(path)
-    system "mkdir #{path}/shared"
-    system "mkdir #{path}/shared/config"
-    system "mkdir #{path}/shared/config/subdomains"
-    # system "mkdir #{path}/config/subdomains"
-    system "mv #{path}/config/subdomains #{path}/shared/config/"
-    system "ln -s #{path}/shared/config/subdomains #{path}/config/subdomains"
+    if Rails.env.production?
+      system "mkdir #{path}/shared/config/subdomains" unless File.exists?("#{path}/shared/config/subdomains")
+      system "ln -s #{path}/shared/config/subdomains #{path}/config/subdomains"
+    else
+      system "mkdir #{path}/config/subdomains" unless File.exists?("#{path}/shared/config/subdomains")
+    end
   end
   def add_basic_data
     clear_current_account
