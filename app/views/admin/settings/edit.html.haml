@@ -220,7 +220,7 @@
       %div
         = label_tag 'cms[sendgrid_password]', 'Sendgrid Password'
         = text_field_tag 'cms[sendgrid_password]', @cms_config['site_settings']['sendgrid_password']
-      / -if $CURRENT_ACCOUNT.is_master?
+      -if $CURRENT_ACCOUNT.is_master?
         %h2 Restricted Fields
         %ul
           - for field in ['header_right', 'additional_styles', 'newsletter_logo']
