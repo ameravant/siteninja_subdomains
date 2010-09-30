@@ -11,19 +11,21 @@ class ApplicationController < ActionController::Base
   before_filter :init_search
   after_filter :find_menu
   $USA_STATES_ARRAY = [['Alabama', 'AL'], ['Alaska', 'AK'], ['Arizona', 'AZ'], ['Arkansas', 'AR'], ['California', 'CA'], ['Colorado', 'CO'], ['Connecticut', 'CT'], ['Delaware', 'DE'], ['District of Columbia', 'DC'], ['Florida', 'FL'], ['Georgia', 'GA'], ['Hawaii', 'HI'], ['Idaho', 'ID'], ['Illinois', 'IL'], ['Indiana', 'IN'], ['Iowa', 'IA'], ['Kansas', 'KS'], ['Kentucky', 'KY'], ['Louisiana', 'LA'], ['Maine', 'ME'], ['Maryland', 'MD'], ['Massachusetts', 'MA'], ['Michigan', 'MI'], ['Minnesota', 'MN'], ['Mississippi', 'MS'], ['Missouri', 'MO'], ['Montana', 'MT'], ['Nebraska', 'NE'], ['Nevada', 'NV'], ['New Hampshire', 'NH'], ['New Jersey', 'NJ'], ['New Mexico', 'NM'], ['New York', 'NY'], ['North Carolina', 'NC'], ['North Dakota', 'ND'], ['Ohio', 'OH'], ['Oklahoma', 'OK'], ['Oregon', 'OR'], ['Pennsylvania', 'PA'], ['Rhode Island', 'RI'], ['South Carolina', 'SC'], ['South Dakota', 'SD'], ['Tennessee', 'TN'], ['Texas', 'TX'], ['Utah', 'UT'], ['Vermont', 'VT'], ['Virginia', 'VA'], ['Washington', 'WA'], ['Wisconsin', 'WI'], ['West Virginia', 'WV'], ['Wyoming', 'WY']] unless const_defined?('USA_STATES_ARRAY')
+  
   def render_404
     render :file => "#{RAILS_ROOT}/public/404.html", :status => 404 and return
   end
-protected
+  
+  protected
   def get_account
-    # if ActiveRecord::Base.connection.tables.include?("accounts")
-    unless domain_without_www.nil?  
-      $CURRENT_ACCOUNT = Account.find_by_subdomain(domain_without_www) || render_404
-    else
-      $CURRENT_ACCOUNT = Account.find_by_name("master")
-    end
+    if ActiveRecord::Base.connection.tables.include?("accounts")
+      unless domain_without_www.nil?  
+        $CURRENT_ACCOUNT = Account.find_by_subdomain(domain_without_www) || render_404
+      else
+        $CURRENT_ACCOUNT = Account.find_by_name("master")
+      end
       $ADMIN = false
-    # end
+    end
   end
 
   def domain_without_www
@@ -50,8 +52,7 @@ protected
   
   def cms_for_layout
     @menus = Menu.all
-    @settings = Setting.find_by_account_id($CURRENT_ACCOUNT.id)
-    @master_settings = Setting.find_by_account_id(1)
+    @settings = Setting.first
     @footer_menus = Menu.find(:all, :conditions => {:show_in_footer => true}, :order => :footer_pos )
     session[:template] = params[:template][:id] if params[:template]
     @templates = ["demo", "t3c2", "t3c3", "t3c4", "t3c5", "t3c6", "t3c7", "t4c1", "t4c2", "t4c4", "t5c2", "t5c3", "t5c4", "t5c5", "t5c6", "t5c7"] if @cms_config['website']['demo']
@@ -64,10 +65,10 @@ protected
   end
   
   def get_siteninja_config
-    if $CURRENT_ACCOUNT.is_master?
-      @cms_config = YAML::load_file("#{RAILS_ROOT}/config/cms.yml")
+    if $CURRENT_ACCOUNT
+      get_subdomain_cms
     else
-      @cms_config = YAML::load_file("#{RAILS_ROOT}/config/subdomains/#{$CURRENT_ACCOUNT.subdomain}/cms.yml")
+      @cms_config = YAML::load_file("#{RAILS_ROOT}/config/cms.yml")
     end
     if @cms_config["site_settings"]["restricted"] and !current_user and controller_name != "sessions"
       redirect_to(new_session_path)
@@ -101,6 +102,13 @@ protected
       end
     else
       redirect_to(new_session_path)
+    end
+  end
+  def get_subdomain_cms
+    if $CURRENT_ACCOUNT.is_master?
+      @cms_config = YAML::load_file("#{RAILS_ROOT}/config/cms.yml")
+    else
+      @cms_config = YAML::load_file("#{RAILS_ROOT}/config/subdomains/#{$CURRENT_ACCOUNT.subdomain}/cms.yml")
     end
   end
 end
