@@ -31,9 +31,9 @@ class Admin::AccountsController < AdminController
       system "mv #{path}/current/config/subdomains/#{@account.subdomain} #{path}/shared/config/subdomains/"
       system "ln -s #{path}/shared/config/subdomains/#{@account.subdomain} #{path}/current/config/subdomains/#{@account.subdomain}"
       system "cp #{path}/current/config/cms.yml #{path}/shared/config/subdomains/#{@account.subdomain}/cms.yml"
-      cms_yml = YAML::load_file("#{path}/current/config/subdomains/#{@account.subdomain}/cms.yml")
+      cms_yml = YAML::load_file("#{path}/shared/config/subdomains/#{@account.subdomain}/cms.yml")
       cms_yml['website']['name'] = "#{@account.name.strip}"
-      File.open("#{path}/current/config/subdomains/#{@account.subdomain}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
+      File.open("#{path}/shared/config/subdomains/#{@account.subdomain}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
     else
       path = RAILS_ROOT
       make_initial_subdomain_folder(path) unless File.exists?("#{path}/config/subdomains") && File.exists?("#{path}/shared/config")
