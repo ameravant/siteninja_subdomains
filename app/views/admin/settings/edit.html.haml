@@ -226,7 +226,7 @@
           - for field in ['header_right', 'additional_styles', 'newsletter_logo']
             %li
               = label_tag'cms[restricted_fields]', field.gsub('_', ' ').capitalize
-              = check_box_tag 'cms[restricted_fields][]', field, @cms_config['site_settings']['restricted_fields'].include?(field) 
+              = check_box_tag 'cms[restricted_fields][]', field, @cms_config['site_settings']['restricted_fields'] ? @cms_config['site_settings']['restricted_fields'].include?(field) : false
   - fancy_submit '/admin' do
     = f.submit "Save settings"
 
