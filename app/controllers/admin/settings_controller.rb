@@ -115,14 +115,14 @@ class Admin::SettingsController < AdminController
           setting.update_attributes(settings)
         end
       end
-      cms_config = YAML::load_file("#{RAILS_ROOT}/config/shared/subdomains/#{setting.account.subdomain}/cms.yml")
+      cms_config = YAML::load_file("#{RAILS_ROOT}/config/subdomains/#{setting.account.subdomain}/cms.yml")
       for key in params[:cms].keys
         if @cms_config['site_settings']['restricted_fields'].include?(key.to_s)
           cms_config['site_settings'][key.to_s] = @cms_config['site_settings'][key.to_s]
         end
       end
       cms_config['site_settings']['restricted_fields'] = @cms_config['site_settings']['restricted_fields']
-      File.open("#{RAILS_ROOT}/shared/config/subdomains/#{setting.account.subdomain}/cms.yml", 'w') { |f| YAML.dump(cms_config, f) }
+      File.open("#{RAILS_ROOT}/config/subdomains/#{setting.account.subdomain}/cms.yml", 'w') { |f| YAML.dump(cms_config, f) }
     end
   end
 
