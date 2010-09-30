@@ -47,9 +47,9 @@ class Admin::AccountsController < AdminController
   
   def make_initial_subdomain_folder(path)
     if Rails.env.production?
-      system "mkdir #{path}/config/subdomains" unless File.exists?("#{path}/shared/config/subdomains")
-      system "mv #{path}/config/subdomains #{path}/shared/config/subdomains" unless File.exists?("#{path}/shared/config/subdomains")
-      system "ln -s #{path}/shared/config/subdomains #{path}/config/subdomains"
+      system "mkdir #{path}/current/config/subdomains" unless File.exists?("#{path}/shared/config/subdomains")
+      system "mv #{path}/current/config/subdomains #{path}/shared/config/subdomains" unless File.exists?("#{path}/shared/config/subdomains")
+      system "ln -s #{path}/shared/config/subdomains #{path}/current/config/subdomains"
     else
       system "mkdir #{path}/config/subdomains" unless File.exists?("#{path}/shared/config/subdomains")
     end
