@@ -111,7 +111,7 @@ class Admin::SettingsController < AdminController
       settings = {}
       for key in params[:settings].keys
         if @cms_config['site_settings']['restricted_fields'].include?(key.to_s)
-          settings[key] = params[:settings][key] #= @master_settings.send(key.to_sym)
+          settings[key] = params[:settings][key] # @master_settings.send(key.to_sym)
           setting.update_attributes(settings)
         end
       end
