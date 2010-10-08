@@ -3,6 +3,7 @@ class AddAccountIdToKlasses < ActiveRecord::Migration
     for table_name in TableNames
       if ActiveRecord::Base.connection.tables.include?(table_name)
         add_column table_name.to_sym, :account_id, :integer, :default => 1
+        add_index table_name.to_sym, :account_id
       end
     end
   end

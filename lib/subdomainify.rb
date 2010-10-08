@@ -78,9 +78,9 @@ end
 
 ActiveRecord::Base.send(:include, Subdomainify)
 ActiveRecord::Migration.send(:include, Konstants) 
-for klass in Klasses  
-  if ActiveRecord::Base.connection.tables.include?(klass.table_name)
-    klass.send(:subdomainify) 
+for table_name in TableNames  
+  if ActiveRecord::Base.connection.tables.include?(table_name)
+    table_name.camelcase.singularize.constantize.send(:subdomainify) 
   end
 end
 Page.send(:uniqueness_validation_for_meta_title)

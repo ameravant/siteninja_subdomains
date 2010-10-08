@@ -480,34 +480,84 @@ namespace :db do
       puts "Adding People...account_id is #{$CURRENT_ACCOUNT.id}"
     end
     def fake_featurable_sections
-      [2, 3].each do |account_id|
+      [1, 2, 3].each do |account_id|
         $CURRENT_ACCOUNT = Account.find(account_id)
         fs = FeaturableSection.create(:title => "Home Page Feature Box", :image_required => true, :site_wide => false, :account_id => account_id)
+        m = Menu.first
+        m.featurable_sections << fs
+        m.save
       end 
     end
-    
-    [1, 2, 3].each do |account_id|
-    $CURRENT_ACCOUNT = Account.find(account_id)
+    def fake_settings
+      [1, 2, 3].each do |account_id|
+        $CURRENT_ACCOUNT = Account.find(account_id)
+        ColumnSectionType.create(:account_id => account_id, :title => "HTML Section")
+        ColumnSectionType.create(:account_id => account_id, :title => "Site Search", :controller_name => "shared", :partial_name => "search_for_side_column")
+        ColumnSectionType.create(:account_id => account_id, :title => "Newsletter Signup", :controller_name => "newsletters", :partial_name => "signup_for_side_column")
+        ColumnSectionType.create(:account_id => account_id, :title => "News", :controller_name => "articles", :partial_name => "articles_for_side_column")
+        ColumnSectionType.create(:account_id => account_id, :title => "Article Categories", :controller_name => "article_categories", :partial_name => "article_categories_for_side_column")
+        ColumnSectionType.create(:account_id => account_id, :title => "Calendar", :controller_name => "events", :partial_name => "events_for_side_column")
+        ColumnSectionType.create(:account_id => account_id, :title => "Testimonial", :controller_name => "testimonials", :partial_name => "testimonial_for_sidebar")
+        ColumnSectionType.create(:account_id => account_id, :title => "Article Authors", :controller_name => "articles", :partial_name => "authors_for_side_column")
+        ColumnSectionType.create(:account_id => account_id, :title => "Article Tags", :controller_name => "articles", :partial_name => "tags_for_side_column")
+        ColumnSectionType.create(:account_id => account_id, :title => "Article Archive", :controller_name => "articles", :partial_name => "archive_for_side_column")
+        ColumnSection.create(:title => "Site Search", :section_type => "shared", :can_delete => false, :partial_name => "search_for_side_column", :account_id => account_id)
+        ColumnSection.create(:title => "Newsletter Signup", :section_type => "newsletters", :can_delete => false, :partial_name => "signup_for_side_column", :account_id => account_id) if @cms_config["modules"]["newsletters"]
+        ColumnSection.create(:title => @cms_config['site_settings']['blog_title'], :section_type => "articles", :count => 5, :can_delete => false, :partial_name => "articles_for_side_column", :show_blurb => true, :account_id => account_id) if @cms_config["modules"]["blog"]
+        ColumnSection.create(:title => "#{@cms_config['site_settings']['article_title']} Categories", :section_type => "article_categories", :count => 5, :can_delete => false, :account_id => account_id) if @cms_config["modules"]["blog"]
+        ColumnSection.create(:title => @cms_config["site_settings"]["events_title"], :section_type => "events", :count => 5, :can_delete => false, :show_blurb => true, :account_id => account_id) if @cms_config["modules"]["events"]
+        ColumnSection.create(:title => "Testimonial", :section_type => "testimonials", :count => 1, :can_delete => false, :account_id => account_id) if @cms_config["features"]["testimonials"]
+        ColumnSection.create(:title => "Content Area", :section_type => "content", :body => Setting.first.side_column_text, :account_id => account_id) if !Setting.all.empty?
+        c = Column.create(:title => "Default Side Column", :account_id => account_id)
+        puts "created default side column for account ##{account.id}"
+        # c.touch
+        # c.save
+        ColumnSection.all.each do |cs|
+          cs.update_attributes(:column_id => 1)
+        end
+        for c in ColumnSection.all
+          t = ColumnSectionType.find_by_title(c.title)
+          t.blank? ? c.column_section_type_id = ColumnSectionType.find_by_title("HTML Section").id : c.column_section_type_id = t.id
+          c.save
+        end
+        c = Column.create(:title => "Default Article Side Column", :account_id => account_id)
+        cs = ColumnSection.create(:account_id => account_id)
+        
+        if Setting.first.blank?
+          ColumnSection.create(:account_id => account_id, :column_id => c.id, :column_section_type_id => ColumnSectionType.find_by_title("Article Categories").id, :count => 5, :title => "Article Categories")
+          ColumnSection.create(:account_id => account_id, :column_id => c.id, :column_section_type_id => ColumnSectionType.find_by_title("Article Archive").id, :count => 5, :title => "Article Archive")
+          ColumnSection.create(:account_id => account_id, :column_id => c.id, :column_section_type_id => ColumnSectionType.find_by_title("Article Authors").id, :count => 5, :title => "Article Authors")
+          ColumnSection.create(:account_id => account_id, :column_id => c.id, :column_section_type_id => ColumnSectionType.find_by_title("Article Tags").id, :count => 5, :title => "Article Tags")
+        else
+          if Setting.first.show_categories_in_sidebar
+            ColumnSection.create(:account_id => account_id, :column_id => c.id, :column_section_type_id => ColumnSectionType.find_by_title("Article Categories").id, :count => 5, :title => c.title)
+            Page.find_by_permalink('blog').update_attributes(:show_article_cats => true) 
+          end
+          ColumnSection.create(:account_id => account_id, :column_id => c.id, :column_section_type_id => ColumnSectionType.find_by_title("Article Archive").id, :count => 5, :title => c.title) if Setting.first.show_archive_in_sidebar
+          ColumnSection.create(:account_id => account_id, :column_id => c.id, :column_section_type_id => ColumnSectionType.find_by_title("Article Authors").id, :count => 5, :title => c.title) if Setting.first.show_authors_in_sidebar
+          ColumnSection.create(:account_id => account_id, :column_id => c.id, :column_section_type_id => ColumnSectionType.find_by_title("Article Tags").id, :count => 5, :title => c.title) if Setting.first.show_tags_in_sidebar
+        end
+        Setting.create!(
+              :account_id => account_id,
+              :newsletter_from_email => 'admin@ameravant.com',
+              :footer_text => '<p style="text-align: center;">&copy; 2008-#YEAR# Site-Ninja.com</p>
+        <p style="text-align: center;"><a href="/" class="icon"><img title="SiteNinja Homepage" src="/system/files/1/thumb/ninja_black.png" alt="Black Ninja" width="48" height="45" border="0" /></a></p>',
+              :inquiry_notification_email => "contact@ameravant.com",
+              :comment_profanity_filter => true,
+              :events_range => 3,
+              :tracking_code => '<script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src=\'" + gaJsHost + "google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E"));
+        </script>
+        <script type="text/javascript">
+        try {
+        var pageTracker = _gat._getTracker("UA-7311013-1");
+        pageTracker._trackPageview();
+        } catch(err) {}</script>'
+            )
+      end
+    end
 
-    Setting.create!(
-      :account_id => account_id,
-      :newsletter_from_email => 'admin@ameravant.com',
-      :footer_text => '<p style="text-align: center;">&copy; 2008-#YEAR# Site-Ninja.com</p>
-<p style="text-align: center;"><a href="/" class="icon"><img title="SiteNinja Homepage" src="/system/files/1/thumb/ninja_black.png" alt="Black Ninja" width="48" height="45" border="0" /></a></p>',
-      :inquiry_notification_email => "contact@ameravant.com",
-      :comment_profanity_filter => true,
-      :events_range => 3,
-      :tracking_code => '<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src=\'" + gaJsHost + "google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-7311013-1");
-pageTracker._trackPageview();
-} catch(err) {}</script>'
-    )
-  end
     fake_assets # keep this line first
     fake_pages
     Page.all.collect{|p| p.save!}
@@ -521,6 +571,7 @@ pageTracker._trackPageview();
     fake_products if @cms_config['modules']['product']
     # fake_testimonials if @cms_config['modules']['product']
     fake_featurable_sections
+    fake_settings
     
     # fs = FeaturableSection.first
     #     m = Menu.first

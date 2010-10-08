@@ -117,6 +117,15 @@ namespace :db do
     user.person_id = dave.id
     user.save
     
+    ColumnSection.create(:title => "Site Search", :section_type => "shared", :can_delete => false, :partial_name => "search_for_side_column", :account_id => $CURRENT_ACCOUNT.id)
+    ColumnSection.create(:title => "Newsletter Signup", :section_type => "newsletters", :can_delete => false, :partial_name => "signup_for_side_column", :account_id => $CURRENT_ACCOUNT.id) if @cms_config["modules"]["newsletters"]
+    ColumnSection.create(:title => @cms_config['site_settings']['blog_title'], :section_type => "articles", :count => 5, :can_delete => false, :partial_name => "articles_for_side_column", :show_blurb => true, :account_id => $CURRENT_ACCOUNT.id) if @cms_config["modules"]["blog"]
+    ColumnSection.create(:title => "#{@cms_config['site_settings']['article_title']} Categories", :section_type => "article_categories", :count => 5, :can_delete => false, :account_id => $CURRENT_ACCOUNT.id) if @cms_config["modules"]["blog"]
+    ColumnSection.create(:title => @cms_config["site_settings"]["events_title"], :section_type => "events", :count => 5, :can_delete => false, :show_blurb => true, :account_id => $CURRENT_ACCOUNT.id) if @cms_config["modules"]["events"]
+    ColumnSection.create(:title => "Testimonial", :section_type => "testimonials", :count => 1, :can_delete => false, :account_id => $CURRENT_ACCOUNT.id) if @cms_config["features"]["testimonials"]
+    ColumnSection.create(:title => "Content Area", :section_type => "content", :body => Setting.first.side_column_text, :account_id => $CURRENT_ACCOUNT.id) if !Setting.all.empty?
+    
+    
      Setting.create(
        :newsletter_from_email => 'admin@ameravant.com',
        :footer_text => "<p>&copy; #YEAR# #{@cms_config['website']['name']}</p>",

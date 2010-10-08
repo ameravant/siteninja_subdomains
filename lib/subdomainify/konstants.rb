@@ -1,5 +1,5 @@
 module Konstants
-  TableNames = %w(article_categories articles assets column_sections comments emails event_categories 
+  TableNames = %w(article_categories articles assets column_sections column_section_types columns comments emails event_categories 
                    event_price_options event_registrations event_transactions events featurable_sections
                    features folders galleries images inquiries link_categories links menus newsletter_blasts 
                    newsletters pages people person_groups product_categories product_options products 
