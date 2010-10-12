@@ -12,7 +12,7 @@ class Admin::AccountsController < AdminController
   end
   def create
     @account = Account.new(params[:account])
-    Account.create(:name => "master") unless Account.any?
+    Account.create(:name => "master") unless Account.count > 0
     @master_settings = Account.master.first.setting
     if @account.save
       add_cms_to_shared
