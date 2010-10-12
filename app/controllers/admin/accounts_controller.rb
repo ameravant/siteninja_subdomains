@@ -58,7 +58,7 @@ class Admin::AccountsController < AdminController
   def add_basic_data
     clear_current_account
     system "rake db:populate_subdomainify_min"
-    Account.last.setting.update_attributes(@master_setting.attributes)
+    Account.last.setting.update_attributes(@master_settings.attributes)
   end
   def clear_current_account
     $CURRENT_ACCOUNT = nil
