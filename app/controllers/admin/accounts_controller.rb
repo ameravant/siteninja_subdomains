@@ -12,7 +12,7 @@ class Admin::AccountsController < AdminController
   end
   def create
     @account = Account.new(params[:account])
-    @master_settings = Account.master.first.settings.first
+    @master_settings = Account.master.first.setting
     if @account.save
       add_cms_to_shared
       add_basic_data
@@ -58,7 +58,7 @@ class Admin::AccountsController < AdminController
   def add_basic_data
     clear_current_account
     system "rake db:populate_subdomainify_min"
-    Account.last.settings.first.update_attributes(@master_setting.attributes)
+    Account.last.setting.update_attributes(@master_setting.attributes)
   end
   def clear_current_account
     $CURRENT_ACCOUNT = nil
