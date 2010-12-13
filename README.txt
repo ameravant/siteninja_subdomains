@@ -5,6 +5,16 @@ any given application the approach is a bit different than what might usually be
 
 When adding this plugin, it must be loaded last, after pages because it will be adding a migration to all tables
 
+QUICKSTART
+After adding the plugin with the siteninja_subdomains git url. *Be sure its loaded last, after pages*. Update the app to run the migrations. 
+
+You can browse to admin/accounts/new and add a new account with a subdomain. 
+This process takes a few moments to complete as it writes files and creates essentially a whole new site.
+The new site will have an admin/admin user like all others.
+That's pretty much it! Everything else works like its its own site.
+
+How the PLUGIN is built and works 
+
 CREATING THE ACCOUNT
 
 The first thing we needed to do is add an 'accounts' table. All data is scoped through the account which is 
