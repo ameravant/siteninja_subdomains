@@ -40,6 +40,7 @@ module ActiveRecord
             condition_sql = "LOWER(#{sql_attribute}) #{comparison_operator}"
             condition_params = [value.mb_chars.downcase]
           end
+          #########adding a default scope of account_id
           configuration[:scope] =  Array(configuration[:scope]) << :account_id if record.respond_to?(:account_id)
           if scope = configuration[:scope]
             Array(scope).map do |scope_item|
