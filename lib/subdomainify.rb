@@ -45,8 +45,8 @@ module Subdomainify #:nodoc:
       def self.find(*args)
         if !$CURRENT_ACCOUNT.nil?
           unless $CURRENT_ACCOUNT.is_master? && $ADMIN 
-            with_scope(:find=>{ :conditions=> "account_id = #{$CURRENT_ACCOUNT.id}" }) do
-              super(*args)
+            with_scope(:find=>{ :conditions=> "account_id = #{$CURRENT_ACCOUNT.id}" }) do # I think the answer is to add a global boolean to everything and 
+              super(*args)                                                                # make the conditions either account_id or global == true && visible == true
             end
           else
             #this is the first effort to remove the scope in the admin section of the master account, orders by account
